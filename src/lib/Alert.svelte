@@ -1,5 +1,11 @@
 <script>
-  export let stroke = 'currentColor'
+  /**
+   * @typedef {Object} Props
+   * @property {string} [stroke]
+   */
+
+  /** @type {Props} */
+  let { stroke = 'currentColor' } = $props()
 </script>
 
 <svg

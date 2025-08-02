@@ -7,6 +7,15 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "module": "NodeNext",
-    "moduleResolution": "NodeNext"
-  }
+    "moduleResolution": "NodeNext",
+    "types": ["svelte"],
+    "verbatimModuleSyntax": true
+  },
+  "exclude": [
+    "node_modules",
+    ".svelte-kit",
+    "build",
+    "dist",
+    ".git"
+  ]
 }
