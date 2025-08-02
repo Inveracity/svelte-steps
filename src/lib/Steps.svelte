@@ -236,7 +236,12 @@
     {#each steps as step, i}
       <!-- step container -->
       <div
-        style="display: flex; align-items:center; flex-grow: 10; width: 100%"
+        style="display: flex; align-items:center; flex-grow: 10;"
+        style:width={vertical
+          ? '100%'
+          : i === 0 || i === steps.length - 1
+            ? 'auto'
+            : '100%'}
         style:flex-direction={vertical
           ? reverse
             ? 'row-reverse'
@@ -253,8 +258,16 @@
               ? 'row-reverse'
               : 'row'
             : 'column'}
-          style:min-width={vertical ? 'var(--size)' : minStepSize}
-          style:min-height={vertical ? minStepSize : 'var(--size)'}
+          style:min-width={vertical
+            ? 'var(--size)'
+            : i === 0 || i === steps.length - 1
+              ? 'var(--size)'
+              : minStepSize}
+          style:min-height={vertical
+            ? i === 0 || i === steps.length - 1
+              ? 'var(--size)'
+              : minStepSize
+            : 'var(--size)'}
         >
           <!-- circle -->
           <button
