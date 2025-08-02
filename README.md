@@ -116,13 +116,13 @@ import Escalation from './YourEscalation.svelt'
 
 ### Events
 
-```javascript
+```typescript
 <Steps
     {steps}
     {current}
-    onclick={(e) => {
-        last = e.detail.last;
-        current = e.detail.current;
+    onclick={(step: StepClickData) => {
+        last = step.last;
+        current = step.current;
     }}
 />
 ````
