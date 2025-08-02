@@ -1,5 +1,8 @@
 # 🐾 Svelte steps component 🐾
 
+> [!IMPORTANT]
+> Forked from shaozi and upgraded to svelte 5 for my own purposes and will probably end up not being compatible with the original library. Thanks shaozi for making it in the first place! ❤️
+
 A customizable step component written in Svelte!
 
 - [x] Bootstrap color theme
@@ -18,7 +21,7 @@ A customizable step component written in Svelte!
 ## Installation
 
 ```sh
-npm install --saveDev svelte-steps
+npm install --save-dev github:Inveracity/svelte-steps
 ```
 
 ## Example Usages
@@ -117,7 +120,7 @@ import Escalation from './YourEscalation.svelt'
 <Steps
     {steps}
     {current}
-    on:click={(e) => {
+    onclick={(e) => {
         last = e.detail.last;
         current = e.detail.current;
     }}
