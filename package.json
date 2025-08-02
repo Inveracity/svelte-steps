@@ -4,7 +4,7 @@
   "description": "A customizable step component written in Svelte",
   "repository": {
     "type": "git",
-    "url": "https://github.com/shaozi/svelte-steps.git"
+    "url": "https://github.com/inveracity/svelte-steps.git"
   },
   "keywords": [
     "svelte-steps",
@@ -18,7 +18,7 @@
   "author": "Jingshao Chen",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/shaozi/svelte-steps/issues"
+    "url": "https://github.com/inveracity/svelte-steps/issues"
   },
   "homepage": "https://svelte-steps.web.app",
   "scripts": {
