@@ -15,6 +15,7 @@ type Steps = {
  *     - `text`: The text displayed below each steps.
  *     - `icon`: A svelte component displayed inside each steps.
  *     - `iconProps`: An object that will be passed as props to the `icon` component.
+ *     - `checkIcon` or `checkicon`: A custom check icon for this specific step when completed. Overrides the global `checkIcon` prop.
  * - `current`: current step index. Number. Default `0`
  * - `size`: size of the step buttons. String. Default `"3rem"`
  * - `line`: thickness of the connecting lines between the step buttons. String. Default `"0.3rem"`
