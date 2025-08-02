@@ -1,6 +1,6 @@
 {
   "name": "svelte-steps",
-  "version": "2.4.5",
+  "version": "3.0.0",
   "description": "A customizable step component written in Svelte",
   "repository": {
     "type": "git",
@@ -44,7 +44,7 @@
     "!dist/**/*.spec.*"
   ],
   "peerDependencies": {
-    "svelte": "^4.0.0"
+    "svelte": "^5.0.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.8",
