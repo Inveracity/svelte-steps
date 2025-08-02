@@ -1,10 +1,10 @@
 <!--
-  @component 
+  @component
 
   ## svelte-steps
 
-  ## props 
-    
+  ## props
+
   - `steps`:
     - Array of object. Length has to be more than 1
     - Required
@@ -30,38 +30,65 @@
 
   ## events
 
-  - `on:click(e)`: click event. Event detail object has two keys:
-    - `e.detail.current`: the index of current step
-    - `e.detail.last`: the index of last step
-    
+  - `onclick`: callback function called when a step is clicked. Receives an object with two keys:
+    - `current`: the index of current step
+    - `last`: the index of last step
+
 -->
 <script>
   // A bootstrap step component
-  import { tweened } from 'svelte/motion'
+  import { Tween } from 'svelte/motion'
   import { cubicOut } from 'svelte/easing'
 
-  import { createEventDispatcher } from 'svelte'
-  import Check from './Check.svelte'
+  import Check from './check.svelte'
   import Alert from './Alert.svelte'
-  export let steps
-  export let current = 0
-  export let vertical = false
-  export let size = vertical ? '2rem' : '3rem'
-  export let line = vertical ? '0.15rem' : '0.3rem'
-  export let lineHeight = undefined
-  export let primary = 'var(--bs-primary, #3a86ff)'
-  export let secondary = 'var(--bs-secondary, #bbbbc0)'
-  export let light = 'var(--bs-light, white)'
-  export let dark = 'var(--bs-dark, black)'
-  export let borderRadius = '50%'
-  export let fontFamily = ''
-  export let reverse = false
-  export let clickable = true
 
-  export let checkIcon = Check
-  export let alertIcon = Alert
-  export let alertColor = 'var(--bs-danger, #dc3545)'
-  export let htmlMode = false;
+  /**
+   * @typedef {Object} Props
+   * @property {any} steps
+   * @property {number} [current]
+   * @property {boolean} [vertical]
+   * @property {any} [size]
+   * @property {any} [line]
+   * @property {any} [lineHeight]
+   * @property {string} [primary]
+   * @property {string} [secondary]
+   * @property {string} [light]
+   * @property {string} [dark]
+   * @property {string} [borderRadius]
+   * @property {string} [fontFamily]
+   * @property {boolean} [reverse]
+   * @property {boolean} [clickable]
+   * @property {any} [checkIcon]
+   * @property {any} [alertIcon]
+   * @property {string} [alertColor]
+   * @property {boolean} [htmlMode]
+   * @property {function} [onclick]
+   */
+
+  /** @type {Props} */
+  let {
+    steps,
+    current = $bindable(0),
+    last = $bindable(0),
+    vertical = false,
+    size = vertical ? '2rem' : '3rem',
+    line = $bindable(vertical ? '0.15rem' : '0.3rem'),
+    lineHeight = undefined,
+    primary = 'var(--bs-primary, #3a86ff)',
+    secondary = 'var(--bs-secondary, #bbbbc0)',
+    light = 'var(--bs-light, white)',
+    dark = 'var(--bs-dark, black)',
+    borderRadius = '50%',
+    fontFamily = '',
+    reverse = false,
+    clickable = true,
+    checkIcon = Check,
+    alertIcon = Alert,
+    alertColor = 'var(--bs-danger, #dc3545)',
+    htmlMode = false,
+    onclick,
+  } = $props()
 
   const minStepSize = '5rem'
   const stepLabelSpace = '1rem'
@@ -74,7 +101,7 @@
   // each segment is half of the step size
 
   // @type { height: number; width: number }[]
-  let segmentSizes = []
+  let segmentSizes = $state([])
   for (let i = 0; i < steps.length; i++) {
     segmentSizes.push({ height: 0, width: 0 })
   }
@@ -86,8 +113,7 @@
     current = 0
   }
 
-  let progress = tweened(current, { duration: 400, easing: cubicOut })
-  let total = 0
+  let progress = new Tween(current, { duration: 400, easing: cubicOut })
   let key = vertical ? 'height' : 'width'
 
   function f(p /*@type number*/) {
@@ -107,38 +133,43 @@
     return ret
   }
 
-  let fill = f(current)
-
-  $: {
-    total = 0
-    if (segmentSizes[0][key] > 0) {
+  // Use $derived for reactive calculations to avoid effect conflicts
+  let total = $derived.by(() => {
+    let calculatedTotal = 0
+    if (segmentSizes[0]?.[key] > 0) {
       for (let i = 0; i < steps.length; i++) {
-        total += segmentSizes[i][key]
+        calculatedTotal += segmentSizes[i][key]
       }
-      total -=
+      calculatedTotal -=
         (segmentSizes[0][key] + segmentSizes[segmentSizes.length - 1][key]) / 2
     }
-    fill = f($progress)
-  }
-  $: {
-    $progress = current
-  }
-  const dispatch = createEventDispatcher()
-  let onClick = (i /*: number*/) => {
+    return calculatedTotal
+  })
+
+  let fill = $derived(f(progress.current))
+
+  // Only one effect to update progress when current changes
+  $effect(() => {
+    progress.set(current)
+  })
+
+  let handleClick = (i /*: number*/) => {
     if (clickable) {
-      let last = current
+      last = current // Update the bindable prop before changing current
       current = i
-      // $progress = i
-      dispatch('click', { current, last })
+      // Call the onclick callback if provided
+      if (onclick) {
+        onclick({ current, last })
+      }
     }
   }
 </script>
 
 <div
   class="steps-container"
-  style={`--size: ${size}; 
+  style={`--size: ${size};
       --line-thickness: ${line};
-      --primary: ${primary}; 
+      --primary: ${primary};
       --secondary: ${secondary};
       --light: ${light};
       --dark: ${dark};
@@ -147,7 +178,7 @@
       --font-family: ${
         fontFamily || "'Helvetica Neue', Helvetica, Arial, sans-serif"
       };
-    display: flex; 
+    display: flex;
     `}
   style:flex-direction={vertical ? (reverse ? 'row-reverse' : 'row') : 'column'}
 >
@@ -163,7 +194,7 @@
     <div
       style:width={vertical ? line : `${segmentSizes[0].width / 2}px`}
       style:height={vertical ? `${segmentSizes[0].height / 2}px` : line}
-    />
+    ></div>
     <div
       style:width={vertical ? line : `${total}px`}
       style:height={vertical ? `${total}px` : line}
@@ -172,26 +203,26 @@
       style:flex-direction={vertical
         ? 'column'
         : reverse
-        ? 'row-reverse'
-        : 'row'}
+          ? 'row-reverse'
+          : 'row'}
     >
       <div
         class="bg-primary"
         style:width={vertical ? line : `${fill}px`}
         style:height={vertical ? `${fill}px` : line}
-      />
+      ></div>
       {#if line != size}
         <!-- the progress indicator -->
         <div
           class="bg-primary"
           style="width:8px; height:8px; border-radius: 50%;"
-        />
+        ></div>
       {/if}
     </div>
     <div
       style:width={vertical ? line : `${segmentSizes[0].width / 2}px`}
       style:height={vertical ? `${segmentSizes[0].height / 2}px` : line}
-    />
+    ></div>
   </div>
   <!--  progress line end -->
   <div
@@ -227,50 +258,54 @@
           <!-- circle -->
           <button
             class="step
-              {i <= $progress
+              {i <= progress.current
               ? step.alert
                 ? 'bg-danger'
                 : 'bg-primary'
-              : 'bg-secondary'} 
+              : 'bg-secondary'}
               text-light
               "
             class:hover-highlight={clickable}
             class:shadow={i == current}
-            on:click={() => {
-              onClick(i)
+            onclick={() => {
+              handleClick(i)
             }}
           >
             {#if step.icon}
-              {#if i < $progress}
+              {#if i < progress.current}
                 {#if step.alert}
                   {#if alertIcon}
-                    <svelte:component this={alertIcon} />
+                    {@const SvelteComponent = alertIcon}
+                    <SvelteComponent />
                   {:else if step.iconProps}
-                    <svelte:component this={step.icon} {...step.iconProps} />
+                    <step.icon {...step.iconProps} />
                   {:else}
-                    <svelte:component this={step.icon} />
+                    <step.icon />
                   {/if}
                 {:else if checkIcon}
-                  <svelte:component this={checkIcon} />
+                  {@const SvelteComponent_1 = checkIcon}
+                  <SvelteComponent_1 />
                 {:else if step.iconProps}
-                  <svelte:component this={step.icon} {...step.iconProps} />
+                  <step.icon {...step.iconProps} />
                 {:else}
-                  <svelte:component this={step.icon} />
+                  <step.icon />
                 {/if}
               {:else if step.iconProps}
-                <svelte:component this={step.icon} {...step.iconProps} />
+                <step.icon {...step.iconProps} />
               {:else}
-                <svelte:component this={step.icon} />
+                <step.icon />
               {/if}
-            {:else if i < $progress}
+            {:else if i < progress.current}
               {#if step.alert}
                 {#if alertIcon}
-                  <svelte:component this={alertIcon} />
+                  {@const SvelteComponent_2 = alertIcon}
+                  <SvelteComponent_2 />
                 {:else}
                   <span class="steps__number">{i + 1}</span>
                 {/if}
               {:else if checkIcon}
-                <svelte:component this={checkIcon} />
+                {@const SvelteComponent_3 = checkIcon}
+                <SvelteComponent_3 />
               {:else}
                 <span class="steps__number">{i + 1}</span>
               {/if}
@@ -299,11 +334,11 @@
                   ? 'right'
                   : 'left'
                 : 'center'}
-              on:click={() => {
-                onClick(i)
+              onclick={() => {
+                handleClick(i)
               }}
             >
-              <div class:text-primary={i <= $progress}>
+              <div class:text-primary={i <= progress.current}>
                 {#if htmlMode}
                   {@html step.text}
                 {:else}

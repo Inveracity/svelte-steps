@@ -4,8 +4,8 @@
   import { HighlightAuto } from 'svelte-highlight'
   import atomOneDark from 'svelte-highlight/styles/atom-one-dark'
 
-  let showCode = true
-  let vertical = false
+  let showCode = $state(true)
+  let vertical = $state(false)
 
   const oldIcon = {
     text: 'step two',
@@ -25,22 +25,24 @@
     icon: Icon,
     iconProps: { name: 'github', direction: 'n', color: 'lightgreen' },
   }
+  let isIconUpdated = $state(false)
+
   const updateIcon2 = () => {
-    stepsTextAndIcons[1] = stepsTextAndIcons[1] == oldIcon ? newIcon : oldIcon
-    stepsIconsOnly[1] =
-      stepsIconsOnly[1] == oldIconNoText ? newIconNoText : oldIconNoText
+    isIconUpdated = !isIconUpdated
+    stepsTextAndIcons[1] = isIconUpdated ? newIcon : oldIcon
+    stepsIconsOnly[1] = isIconUpdated ? newIconNoText : oldIconNoText
   }
   const stepsTextOnly = [
     { text: 'Step one' },
     { text: 'Step two' },
     { text: 'Step three' },
   ]
-  const stepsIconsOnly = [
+  const stepsIconsOnly = $state([
     { icon: Icon, iconProps: { name: 'money' } },
     oldIconNoText,
     { icon: Icon, iconProps: { name: 'person' } },
-  ]
-  let stepsTextAndIcons = [
+  ])
+  let stepsTextAndIcons = $state([
     {
       text: 'step one',
       icon: Icon,
@@ -48,9 +50,9 @@
     },
     oldIcon,
     { text: 'the last step', icon: Icon, iconProps: { name: 'person' } },
-  ]
+  ])
 
-  $: demos = [
+  let demos = $derived([
     {
       title: 'Basic Usage',
       code: `<script>
@@ -133,17 +135,13 @@
       steps: stepsTextAndIcons,
       props: { vertical: true, reverse: true },
     },
-  ]
+  ])
 
-  let current = 1
-
-  let currentStep = 0
-  let lastStep = 0
-  const onClick = (
-    /** @type {{ detail: { current: number; last: number; }; }} */ e
-  ) => {
-    currentStep = e.detail.current
-    lastStep = e.detail.last
+  let current = $state(1)
+  let last = $state(0)
+  const onClick = (/** @type {{ current: number; last: number; }} */ data) => {
+    current = data.current
+    last = data.last
   }
 </script>
 
@@ -174,16 +172,20 @@
   <h2>Install</h2>
   <HighlightAuto code={`npm install --save-dev svelte-steps`} />
   <h2>
-    Usag<span
-      on:click={() => {
+    Usage
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <span
+      onclick={() => {
         showCode = !showCode
       }}
-      on:keydown={() => {}}>e</span
-    ><span
-      on:click={() => {
+      onkeydown={() => {}}>e</span
+    >
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <span
+      onclick={() => {
         vertical = !vertical
       }}
-      on:keydown={() => {}}>:</span
+      onkeydown={() => {}}>:</span
     >
   </h2>
 
@@ -208,28 +210,33 @@
     <div class="col-md-6 my-3">
       <HighlightAuto
         code={`<script>
-  const onClick = (e) => {
-    current = e.detail.current
-    last = e.detail.last
+  const onClick = (data) => {
+    current = data.current
+    last = data.last
   }
 <\/script>
-<Steps on:click={onClick} {steps} />
+<Steps onclick={onClick} {steps} />
 <div>Clicked: {current}</div>
 <div>Last: {last}</div>
 `}
       />
     </div>
     <div class="col-md-6 my-3">
-      <Steps bind:current on:click={onClick} steps={stepsTextAndIcons} />
+      <Steps
+        bind:current
+        bind:last
+        onclick={onClick}
+        steps={stepsTextAndIcons}
+      />
       <div class="mt-2 alert alert-info">
-        <div class="text-center">Clicked: <code>{currentStep}</code></div>
-        <div class="text-center">Last: <code>{lastStep}</code></div>
+        <div class="text-center">Clicked: <code>{current}</code></div>
+        <div class="text-center">Last: <code>{last}</code></div>
       </div>
     </div>
 
     <div>
       <h4>Change Step Icon Programmatically</h4>
-      <button class="btn btn-primary" on:click={updateIcon2}
+      <button class="btn btn-primary" onclick={updateIcon2}
         >Change step 2 icon</button
       >
     </div>
@@ -364,13 +371,13 @@
   <footer
     class="d-flex justify-content-between align-items-center my-3 py-2 border-top"
   >
-    <div />
+    <div></div>
     <div class="text-secondary small">
       Built with
       <span class="text-danger h5"><Icon name="svelte" /></span>
       <a href="https://kit.svelte.dev">SvelteKit</a>
     </div>
-    <div />
+    <div></div>
   </footer>
 </div>
 
