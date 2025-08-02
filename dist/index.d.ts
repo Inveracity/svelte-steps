@@ -8,6 +8,11 @@ declare module 'svelte-steps' {
         alert?: boolean;
     }
 
+    interface StepClickData {
+        current: number;
+        last: number;
+    }
+
     interface StepsProps {
         steps: StepObject[];
         current?: number;
@@ -25,7 +30,7 @@ declare module 'svelte-steps' {
         checkIcon?: any;
         alertIcon?: any;
         alertColor?: string;
-        onclick?: (data: { current: number; last: number }) => void;
+        onclick?: (data: StepClickData) => void;
     }
 
     export class Steps extends SvelteComponent<StepsProps> { }
