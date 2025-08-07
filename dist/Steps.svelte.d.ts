@@ -59,7 +59,6 @@ declare const Steps: import("svelte").Component<{
     htmlMode?: boolean;
     duration?: number;
     easing?: Function;
-    aot?: number;
     onclick?: Function;
 }, {}, "line" | "current" | "last">;
 type Props = {
@@ -83,6 +82,5 @@ type Props = {
     htmlMode?: boolean;
     duration?: number;
     easing?: Function;
-    aot?: number;
     onclick?: Function;
 };
