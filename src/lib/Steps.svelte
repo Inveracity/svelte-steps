@@ -284,7 +284,6 @@
               text-light
               "
             class:hover-highlight={clickable}
-            class:shadow={i == current}
             onclick={() => {
               handleClick(i)
             }}
@@ -424,8 +423,5 @@
   }
   .bg-danger {
     background-color: var(--danger) !important;
-  }
-  .shadow {
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
   }
 </style>
