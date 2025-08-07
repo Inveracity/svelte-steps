@@ -64,6 +64,8 @@
    * @property {any} [alertIcon]
    * @property {string} [alertColor]
    * @property {boolean} [htmlMode]
+   * @property {number} [duration]
+   * @property {function} [easing]
    * @property {function} [onclick]
    */
 
@@ -88,6 +90,8 @@
     alertIcon = Alert,
     alertColor = 'var(--bs-danger, #dc3545)',
     htmlMode = false,
+    duration = 400,
+    easing = cubicOut,
     onclick,
   } = $props()
 
@@ -114,7 +118,7 @@
     current = 0
   }
 
-  let progress = new Tween(current, { duration: 400, easing: cubicOut })
+  let progress = new Tween(current, { duration: duration, easing: easing })
   let key = vertical ? 'height' : 'width'
 
   function f(p /*@type number*/) {

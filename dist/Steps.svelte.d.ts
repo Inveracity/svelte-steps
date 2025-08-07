@@ -57,6 +57,8 @@ declare const Steps: import("svelte").Component<{
     alertIcon?: any;
     alertColor?: string;
     htmlMode?: boolean;
+    duration?: number;
+    easing?: Function;
     onclick?: Function;
 }, {}, "line" | "current" | "last">;
 type Props = {
@@ -78,5 +80,7 @@ type Props = {
     alertIcon?: any;
     alertColor?: string;
     htmlMode?: boolean;
+    duration?: number;
+    easing?: Function;
     onclick?: Function;
 };
