@@ -30,6 +30,8 @@ declare module 'svelte-steps' {
         checkIcon?: any;
         alertIcon?: any;
         alertColor?: string;
+        duration?: number;
+        easing?: (t: number) => number;
         onclick?: (data: StepClickData) => void;
     }
 
