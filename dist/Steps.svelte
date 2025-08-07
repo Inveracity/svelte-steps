@@ -296,7 +296,7 @@
             }}
           >
             {#if step.icon}
-              {#if i < stepProgress}
+              {#if i < stepProgress || (i === current && i === steps.length - 1)}
                 {#if step.alert}
                   {#if alertIcon}
                     {@const SvelteComponent = alertIcon}
@@ -322,7 +322,7 @@
               {:else}
                 <step.icon />
               {/if}
-            {:else if i < stepProgress}
+            {:else if i < stepProgress || (i === current && i === steps.length - 1)}
               {#if step.alert}
                 {#if alertIcon}
                   {@const SvelteComponent_2 = alertIcon}
