@@ -66,7 +66,6 @@
    * @property {boolean} [htmlMode]
    * @property {number} [duration]
    * @property {function} [easing]
-   * @property {number} [aot] // ahead of time
    * @property {function} [onclick]
    */
 
@@ -93,7 +92,6 @@
     htmlMode = false,
     duration = 400,
     easing = cubicOut,
-    aot = 0.3, // ahead of time, how quickly the step appears before the progress bar reaches it
     onclick,
   } = $props()
 
@@ -122,12 +120,6 @@
 
   let progress = new Tween(current, { duration: duration, easing: easing })
   let key = vertical ? 'height' : 'width'
-
-  // Create a slightly ahead progress value for step appearance updates
-  // This makes steps change their appearance before the progress bar visually reaches them
-  let stepProgress = $derived(
-    Math.min(progress.current + aot, steps.length - 1)
-  )
 
   function f(p /*@type number*/) {
     // 0 - 1: $p * (0 + 1)/2
@@ -284,7 +276,7 @@
           <!-- circle -->
           <button
             class="step
-              {i <= stepProgress
+              {i <= current
               ? step.alert
                 ? 'bg-danger'
                 : 'bg-primary'
@@ -298,7 +290,7 @@
             }}
           >
             {#if step.icon}
-              {#if i < stepProgress}
+              {#if i < current}
                 {#if step.alert}
                   {#if alertIcon}
                     {@const SvelteComponent = alertIcon}
@@ -324,7 +316,7 @@
               {:else}
                 <step.icon />
               {/if}
-            {:else if i < stepProgress}
+            {:else if i < current}
               {#if step.alert}
                 {#if alertIcon}
                   {@const SvelteComponent_2 = alertIcon}
@@ -370,7 +362,7 @@
                 handleClick(i)
               }}
             >
-              <div class:text-primary={i <= stepProgress}>
+              <div class:text-primary={i <= current}>
                 {#if htmlMode}
                   {@html step.text}
                 {:else}
